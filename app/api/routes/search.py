@@ -6,7 +6,7 @@ from app.services.embedding_service import embed_full_image, embed_crops_from_bo
 router = APIRouter()
 
 
-@router.post("/image/search-ready")
+@router.post("/image")
 async def segment_and_embed_image(
     file: Annotated[UploadFile, File()],
     prompt: Annotated[str, Form()],
