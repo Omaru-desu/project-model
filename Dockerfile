@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install "sam3 @ git+https://github.com/facebookresearch/sam3.git@<COMMIT_SHA>"
 
 COPY app /app/app
-COPY scripts /app/scripts
+COPY app/scripts /app/scripts
 
 RUN chmod +x /app/scripts/start.sh
 
