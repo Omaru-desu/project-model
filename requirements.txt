@@ -9,3 +9,4 @@ einops
 triton
 pycocotools
 psutil
+transformers>=4.56.0
