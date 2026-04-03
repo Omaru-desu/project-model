@@ -21,7 +21,7 @@ RUN pip install torch==2.10.0 torchvision --index-url https://download.pytorch.o
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install "sam3 @ git+https://github.com/facebookresearch/sam3.git@<COMMIT_SHA>"
+RUN pip install "sam3 @ git+https://github.com/facebookresearch/sam3.git"
 
 COPY app /app/app
 COPY app/scripts /app/scripts
