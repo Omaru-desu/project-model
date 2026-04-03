@@ -11,8 +11,10 @@ RUN apt-get update && apt-get install -y \
     python3.12 python3-pip python3.12-venv git curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN ln -sf /usr/bin/python3.12 /usr/bin/python
-RUN python -m pip install --upgrade pip setuptools wheel
+RUN python3.12 -m venv /opt/venv
+
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --upgrade pip setuptools wheel
 
 RUN pip install torch==2.10.0 torchvision --index-url https://download.pytorch.org/whl/cu128
 
