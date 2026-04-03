@@ -1,3 +1,4 @@
+from fastapi import APIRouter
 from typing import Annotated
 
 from app.services.segment_service import segment_uploaded_image
