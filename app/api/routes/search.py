@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from typing import Annotated
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 
 from app.services.segment_service import segment_uploaded_image
 from app.services.embedding_service import embed_full_image, embed_crops_from_boxes
