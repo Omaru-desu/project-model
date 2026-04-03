@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from app.api.routes.health import router as health_router
 from app.api.routes.segment import router as segment_router
 from app.services.sam_runtime import sam_runtime
+from app.services.dinov3_runtime import dinov3_runtime
 
 load_dotenv()
 
@@ -25,6 +26,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event() -> None:
     sam_runtime.load()
+    dinov3_runtime.load()
 
 app.include_router(health_router, prefix="")
 app.include_router(segment_router, prefix="/segment")
