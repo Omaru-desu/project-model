@@ -1,11 +1,11 @@
 from fastapi import APIRouter
+from app.services.sam_runtime import sam_runtime
 
 router = APIRouter()
 
-@router.get("/")
-def read_root():
-    return {"Hello": "World"}
-
 @router.get("/health")
-def health():
-    return {"status": "ok"}
+async def health():
+    return {
+        "status": "ok",
+        "sam_loaded": sam_runtime.is_ready(),
+    }

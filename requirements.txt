@@ -2,3 +2,10 @@ fastapi
 uvicorn[standard]
 python-dotenv
 python-multipart
+pillow
+numpy
+setuptools<82
+einops
+triton
+pycocotools
+psutil
