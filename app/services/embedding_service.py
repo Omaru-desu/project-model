@@ -55,6 +55,12 @@ def _clamp_box(box, width: int, height: int):
     return x1, y1, x2, y2
 
 
+def embed_pil_images(images: List[Image.Image], embedding_type: str = "cls") -> List[List[float]]:
+    """Run DINOv3 on a batch of PIL images and return normalised embeddings."""
+    embs = _run_dinov3_on_pil(images, embedding_type=embedding_type)
+    return [e.tolist() for e in embs]
+
+
 def embed_full_image(file_bytes: bytes, embedding_type: str = "cls") -> List[float]:
     image = Image.open(io.BytesIO(file_bytes)).convert("RGB")
     emb = _run_dinov3_on_pil([image], embedding_type=embedding_type)[0]
