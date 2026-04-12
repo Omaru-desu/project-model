@@ -38,3 +38,6 @@ htmlcov/
 *.log
 
 checkpoints/
+
+*.pyc
+tmp_*.pyc*
