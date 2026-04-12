@@ -10,5 +10,6 @@ triton
 pycocotools
 psutil
 transformers>=4.56.0
+huggingface_hub
 google-cloud-storage
 opencv-python

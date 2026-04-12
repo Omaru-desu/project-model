@@ -1,0 +1,103 @@
+# Cloud Build pipeline: build → push to Artifact Registry → deploy to GCP VM
+#
+# Two triggers should be created pointing at this file:
+#   1. Branch: development  →  _ENV=staging,  _VM_NAME=fathom-model-vm-staging
+#   2. Branch: main         →  _ENV=production, _VM_NAME=fathom-model-vm-production
+#
+# Required substitutions (set per trigger):
+#   _ENV       : deployment environment, e.g. staging or production
+#   _REGION    : Artifact Registry region, e.g. asia-southeast1
+#   _AR_REPO   : Artifact Registry repository name, e.g. fathom
+#   _VM_NAME   : GCE VM instance name
+#   _VM_ZONE   : GCE VM zone, e.g. asia-southeast1-a
+#
+# IAM prerequisites (run once):
+#   # Allow Cloud Build SA to SSH via IAP
+#   gcloud projects add-iam-policy-binding $PROJECT_ID \
+#     --member="serviceAccount:$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')@cloudbuild.gserviceaccount.com" \
+#     --role="roles/iap.tunnelResourceAccessor"
+#   gcloud projects add-iam-policy-binding $PROJECT_ID \
+#     --member="serviceAccount:$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')@cloudbuild.gserviceaccount.com" \
+#     --role="roles/compute.osLogin"
+#   # Allow VM service account to pull from Artifact Registry
+#   gcloud projects add-iam-policy-binding $PROJECT_ID \
+#     --member="serviceAccount:<VM_SERVICE_ACCOUNT>" \
+#     --role="roles/artifactregistry.reader"
+#
+# VM one-time setup (run on each VM):
+#   sudo mkdir -p /etc/fathom
+#   echo "HF_TOKEN=<your_token>" | sudo tee /etc/fathom/env
+#   sudo chmod 600 /etc/fathom/env
+#   gcloud auth configure-docker asia-southeast1-docker.pkg.dev
+
+steps:
+  # Pull env-tagged image for layer cache (failure OK on first build)
+  - name: 'gcr.io/cloud-builders/docker'
+    id: pull-cache
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        docker pull ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/fathom-model:${_ENV} || true
+
+  # Build image, reusing cached layers
+  - name: 'gcr.io/cloud-builders/docker'
+    id: build
+    waitFor: [pull-cache]
+    args:
+      - build
+      - --cache-from
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/fathom-model:${_ENV}
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/fathom-model:$SHORT_SHA
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/fathom-model:${_ENV}
+      - .
+    timeout: '3600s'
+
+  # Push both tags to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: push
+    waitFor: [build]
+    args:
+      - push
+      - --all-tags
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/fathom-model
+
+  # Deploy to GCE VM via IAP tunnel SSH
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: deploy
+    waitFor: [push]
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud compute ssh ${_VM_NAME} \
+          --zone=${_VM_ZONE} \
+          --tunnel-through-iap \
+          --command="
+            docker pull ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/fathom-model:$SHORT_SHA && \
+            docker stop fathom-model-${_ENV} 2>/dev/null; \
+            docker rm   fathom-model-${_ENV} 2>/dev/null; \
+            docker run -d \
+              --name fathom-model-${_ENV} \
+              --gpus all \
+              --restart unless-stopped \
+              -p 8080:8080 \
+              --env-file /etc/fathom/env \
+              ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/fathom-model:$SHORT_SHA
+          "
+
+substitutions:
+  _ENV: staging
+  _REGION: asia-southeast1
+  _AR_REPO: fathom
+  _VM_NAME: fathom-model-vm-staging
+  _VM_ZONE: asia-southeast1-a
+
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
+
+# Allow ~60 min: 10 min pull-cache + 45 min build + 5 min push/deploy
+timeout: '4200s'
