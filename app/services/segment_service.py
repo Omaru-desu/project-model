@@ -28,6 +28,24 @@ def segment_uploaded_image(file_bytes: bytes, prompt: str) -> list[dict]:
     return segment_image_with_multiple_prompts(image, [("single", prompt, prompt)])
 
 
+def _run_prompts_on_state(state, prompts: list[tuple[str, str, str]]) -> list[dict]:
+    results = []
+    for label_id, display_label, prompt_term in prompts:
+        output = sam_runtime.processor.set_text_prompt(
+            state=state,
+            prompt=prompt_term,
+        )
+        results.append({
+            "label_id": label_id,
+            "display_label": display_label,
+            "prompt": prompt_term,
+            "masks": to_cpu_tensor(output["masks"]),
+            "boxes": to_python_or_cpu(output["boxes"]),
+            "scores": to_python_or_cpu(output["scores"]),
+        })
+    return results
+
+
 def segment_image_with_multiple_prompts(
     image: Image.Image,
     prompts: list[tuple[str, str, str]],
@@ -35,43 +53,11 @@ def segment_image_with_multiple_prompts(
     if sam_runtime.processor is None:
         raise RuntimeError("SAM 3 runtime is not loaded")
 
-    results = []
-
     with torch.inference_mode():
         if DEVICE == "cuda" and torch.cuda.is_available():
             with torch.autocast("cuda", dtype=torch.float16):
                 state = sam_runtime.processor.set_image(image)
-
-                for label_id, display_label, prompt_term in prompts:
-                    output = sam_runtime.processor.set_text_prompt(
-                        state=state,
-                        prompt=prompt_term,
-                    )
-
-                    results.append({
-                        "label_id": label_id,
-                        "display_label": display_label,
-                        "prompt": prompt_term,
-                        "masks": to_cpu_tensor(output["masks"]),
-                        "boxes": to_python_or_cpu(output["boxes"]),
-                        "scores": to_python_or_cpu(output["scores"]),
-                    })
+                return _run_prompts_on_state(state, prompts)
         else:
             state = sam_runtime.processor.set_image(image)
-
-            for label_id, display_label, prompt_term in prompts:
-                output = sam_runtime.processor.set_text_prompt(
-                    state=state,
-                    prompt=prompt_term,
-                )
-
-                results.append({
-                    "label_id": label_id,
-                    "display_label": display_label,
-                    "prompt": prompt_term,
-                    "masks": to_cpu_tensor(output["masks"]),
-                    "boxes": to_python_or_cpu(output["boxes"]),
-                    "scores": to_python_or_cpu(output["scores"]),
-                })
-
-    return results
+            return _run_prompts_on_state(state, prompts)
