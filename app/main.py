@@ -7,6 +7,7 @@ from app.api.routes.health import router as health_router
 from app.api.routes.segment import router as segment_router
 from app.api.routes.search import router as search_router
 from app.api.routes.embed import router as embed_router
+from app.api.routes.process import router as process_router
 from app.services.sam_runtime import sam_runtime
 from app.services.dinov3_runtime import dinov3_runtime
 
@@ -34,4 +35,4 @@ app.include_router(health_router, prefix="")
 app.include_router(segment_router, prefix="/segment")
 app.include_router(search_router, prefix="/search")
 app.include_router(embed_router, prefix="/embed")
-
+app.include_router(process_router, prefix="/process")

@@ -2,7 +2,7 @@
   {
     "label_id": "fish",
     "display_label": "fish",
-    "prompt_terms": ["fish", "bony fish"],
+    "prompt_terms": ["fish"],
     "parent_group": "vertebrate",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -10,7 +10,7 @@
   {
     "label_id": "shark_ray",
     "display_label": "shark/ray",
-    "prompt_terms": ["shark", "ray", "elasmobranch"],
+    "prompt_terms": ["shark", "ray"],
     "parent_group": "vertebrate",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -18,7 +18,7 @@
   {
     "label_id": "sea_cucumber",
     "display_label": "sea cucumber",
-    "prompt_terms": ["sea cucumber", "holothurian"],
+    "prompt_terms": ["sea cucumber"],
     "parent_group": "echinoderm",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -26,7 +26,7 @@
   {
     "label_id": "sea_star",
     "display_label": "sea star",
-    "prompt_terms": ["sea star", "starfish", "asteroid"],
+    "prompt_terms": ["sea star"],
     "parent_group": "echinoderm",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -34,7 +34,7 @@
   {
     "label_id": "brittle_star",
     "display_label": "brittle star",
-    "prompt_terms": ["brittle star", "ophiuroid"],
+    "prompt_terms": ["brittle star"],
     "parent_group": "echinoderm",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -42,7 +42,7 @@
   {
     "label_id": "sea_urchin",
     "display_label": "sea urchin",
-    "prompt_terms": ["sea urchin", "urchin", "echinoid"],
+    "prompt_terms": ["sea urchin"],
     "parent_group": "echinoderm",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -58,7 +58,7 @@
   {
     "label_id": "lobster_crayfish",
     "display_label": "lobster/crayfish",
-    "prompt_terms": ["lobster", "crayfish", "crustacean"],
+    "prompt_terms": ["lobster", "crayfish"],
     "parent_group": "crustacean",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -74,7 +74,7 @@
   {
     "label_id": "octopus",
     "display_label": "octopus",
-    "prompt_terms": ["octopus", "octopod"],
+    "prompt_terms": ["octopus"],
     "parent_group": "cephalopod",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -98,7 +98,7 @@
   {
     "label_id": "gastropod",
     "display_label": "gastropod/snail",
-    "prompt_terms": ["gastropod", "snail", "marine snail"],
+    "prompt_terms": ["marine snail"],
     "parent_group": "mollusc",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -106,7 +106,7 @@
   {
     "label_id": "bivalve",
     "display_label": "bivalve",
-    "prompt_terms": ["bivalve", "clam", "mussel", "oyster"],
+    "prompt_terms": ["clam", "mussel", "oyster"],
     "parent_group": "mollusc",
     "group_type": "sessile",
     "use_for_prompt": true
@@ -114,7 +114,7 @@
   {
     "label_id": "jellyfish",
     "display_label": "jellyfish",
-    "prompt_terms": ["jellyfish", "medusa"],
+    "prompt_terms": ["jellyfish"],
     "parent_group": "cnidarian",
     "group_type": "mobile",
     "use_for_prompt": true
@@ -122,7 +122,7 @@
   {
     "label_id": "anemone",
     "display_label": "anemone",
-    "prompt_terms": ["anemone", "sea anemone"],
+    "prompt_terms": ["sea anemone"],
     "parent_group": "cnidarian",
     "group_type": "sessile",
     "use_for_prompt": true
@@ -130,7 +130,7 @@
   {
     "label_id": "hard_coral",
     "display_label": "hard coral",
-    "prompt_terms": ["hard coral", "stony coral"],
+    "prompt_terms": ["hard coral"],
     "parent_group": "coral",
     "group_type": "sessile",
     "use_for_prompt": true
@@ -146,113 +146,57 @@
   {
     "label_id": "sponge",
     "display_label": "sponge",
-    "prompt_terms": ["sponge", "sea sponge"],
+    "prompt_terms": ["sea sponge"],
     "parent_group": "porifera",
-    "group_type": "sessile",
-    "use_for_prompt": true
-  },
-  {
-    "label_id": "ascidian",
-    "display_label": "ascidian",
-    "prompt_terms": ["ascidian", "sea squirt", "tunicate"],
-    "parent_group": "tunicate",
-    "group_type": "sessile",
-    "use_for_prompt": true
-  },
-  {
-    "label_id": "hydroid",
-    "display_label": "hydroid",
-    "prompt_terms": ["hydroid"],
-    "parent_group": "cnidarian",
-    "group_type": "sessile",
-    "use_for_prompt": true
-  },
-  {
-    "label_id": "bryozoan",
-    "display_label": "bryozoan",
-    "prompt_terms": ["bryozoan", "moss animal"],
-    "parent_group": "bryozoa",
     "group_type": "sessile",
     "use_for_prompt": true
   },
   {
     "label_id": "worm",
     "display_label": "worm",
-    "prompt_terms": ["marine worm", "worm", "polychaete"],
+    "prompt_terms": ["worm"],
     "parent_group": "invertebrate",
     "group_type": "mobile",
     "use_for_prompt": true
   },
   {
-    "label_id": "macroalgae",
-    "display_label": "macroalgae",
-    "prompt_terms": ["macroalgae", "algae", "seaweed"],
-    "parent_group": "plant_like",
-    "group_type": "sessile",
+    "label_id": "whale",
+    "display_label": "whale",
+    "prompt_terms": ["whale"],
+    "parent_group": "marine_mammal",
+    "group_type": "mobile",
     "use_for_prompt": true
   },
   {
-    "label_id": "seagrass",
-    "display_label": "seagrass",
-    "prompt_terms": ["seagrass"],
-    "parent_group": "plant_like",
-    "group_type": "sessile",
+    "label_id": "dolphin",
+    "display_label": "dolphin",
+    "prompt_terms": ["dolphin"],
+    "parent_group": "marine_mammal",
+    "group_type": "mobile",
     "use_for_prompt": true
   },
   {
-    "label_id": "rock",
-    "display_label": "rock",
-    "prompt_terms": ["rock", "hard substrate", "reef rock"],
-    "parent_group": "substrate",
-    "group_type": "abiotic",
+    "label_id": "sea_lion",
+    "display_label": "sea lion",
+    "prompt_terms": ["sea lion"],
+    "parent_group": "marine_mammal",
+    "group_type": "mobile",
     "use_for_prompt": true
   },
   {
-    "label_id": "sand_mud",
-    "display_label": "sand/mud",
-    "prompt_terms": ["sand", "mud", "soft sediment", "sediment"],
-    "parent_group": "substrate",
-    "group_type": "abiotic",
+    "label_id": "eel",
+    "display_label": "eel",
+    "prompt_terms": ["eel"],
+    "parent_group": "fish",
+    "group_type": "mobile",
     "use_for_prompt": true
   },
   {
-    "label_id": "rubble",
-    "display_label": "rubble",
-    "prompt_terms": ["rubble", "shell hash", "coral rubble"],
-    "parent_group": "substrate",
-    "group_type": "abiotic",
+    "label_id": "seahorse",
+    "display_label": "seahorse",
+    "prompt_terms": ["seahorse"],
+    "parent_group": "fish",
+    "group_type": "mobile",
     "use_for_prompt": true
-  },
-  {
-    "label_id": "detritus",
-    "display_label": "detritus",
-    "prompt_terms": ["detritus", "organic debris"],
-    "parent_group": "substrate",
-    "group_type": "abiotic",
-    "use_for_prompt": true
-  },
-  {
-    "label_id": "artificial_structure",
-    "display_label": "artificial structure",
-    "prompt_terms": ["artificial structure", "rope", "metal structure", "debris"],
-    "parent_group": "non_biota",
-    "group_type": "abiotic",
-    "use_for_prompt": true
-  },
-  {
-    "label_id": "unknown_biota",
-    "display_label": "unknown biota",
-    "prompt_terms": ["marine organism", "underwater organism"],
-    "parent_group": "unknown",
-    "group_type": "fallback",
-    "use_for_prompt": false
-  },
-  {
-    "label_id": "unknown_substrate",
-    "display_label": "unknown substrate",
-    "prompt_terms": ["seafloor", "substrate"],
-    "parent_group": "unknown",
-    "group_type": "fallback",
-    "use_for_prompt": false
   }
 ]

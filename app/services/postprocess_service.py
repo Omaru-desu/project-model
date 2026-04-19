@@ -40,6 +40,23 @@ def iou(box1: list[float], box2: list[float]) -> float:
     return inter / union
 
 
+def iom(box1: list[float], box2: list[float]) -> float:
+    x1 = max(box1[0], box2[0])
+    y1 = max(box1[1], box2[1])
+    x2 = min(box1[2], box2[2])
+    y2 = min(box1[3], box2[3])
+
+    inter = max(0.0, x2 - x1) * max(0.0, y2 - y1)
+    if inter <= 0:
+        return 0.0
+
+    min_area = min(box_area(box1), box_area(box2))
+    if min_area <= 0:
+        return 0.0
+
+    return inter / min_area
+
+
 def blur_score_from_bbox(image: Image.Image, bbox: list[float]) -> float:
     x1, y1, x2, y2 = [int(v) for v in bbox]
     crop = image.crop((x1, y1, x2, y2))
@@ -115,16 +132,32 @@ def apply_filters(image: Image.Image, detections: list[dict]) -> list[dict]:
 
 def merge_overlapping_detections(detections: list[dict]) -> list[dict]:
     detections = sorted(detections, key=lambda d: d["score"], reverse=True)
-    kept = []
+    clusters = []
 
     for det in detections:
-        duplicate = False
-        for existing in kept:
-            if det["label_id"] == existing["label_id"] and iou(det["bbox"], existing["bbox"]) >= IOU_MERGE_THRESHOLD:
-                duplicate = True
+        added_to_cluster = False
+        for cluster in clusters:
+            primary = cluster[0]
+            if iou(det["bbox"], primary["bbox"]) >= IOU_MERGE_THRESHOLD or iom(det["bbox"], primary["bbox"]) >= 0.80:
+                cluster.append(det)
+                added_to_cluster = True
                 break
-        if not duplicate:
-            kept.append(det)
+        
+        if not added_to_cluster:
+            clusters.append([det])
+
+    kept = []
+    for cluster in clusters:
+        seen_labels = set()
+        cluster_kept = []
+        for det in cluster:
+            if det["label_id"] not in seen_labels:
+                cluster_kept.append(det)
+                seen_labels.add(det["label_id"])
+            if len(cluster_kept) == 3:
+                break
+        
+        kept.extend(cluster_kept)
 
     return kept
 
@@ -181,3 +214,41 @@ def build_review_candidates(
         frame_gcs_uri=frame_gcs_uri,
     )
     return detections
+
+
+def build_review_candidates_from_memory(
+    frame_id: str,
+    image: Image.Image,
+    raw_outputs: list[dict],
+) -> list[dict]:
+    """In-memory version: returns crop and mask as PIL Image objects instead of uploading to GCS."""
+    detections = normalize_raw_outputs(frame_id, raw_outputs)
+    detections = apply_filters(image, detections)
+    detections = merge_overlapping_detections(detections)
+
+    result = []
+    for det in detections:
+        detection_id = uuid4().hex
+
+        x1, y1, x2, y2 = [int(v) for v in det["bbox"]]
+        crop_image = image.crop((x1, y1, x2, y2))
+
+        mask_np = np.array(det["mask"])
+        mask_np = np.squeeze(mask_np)
+        mask_np = (mask_np > 0).astype(np.uint8) * 255
+        mask_image = Image.fromarray(mask_np, mode="L")
+
+        result.append({
+            "detection_id": detection_id,
+            "frame_id": det["frame_id"],
+            "label_id": det["label_id"],
+            "display_label": det["display_label"],
+            "prompt": det["prompt"],
+            "bbox": det["bbox"],
+            "score": det["score"],
+            "blur_score": det["blur_score"],
+            "crop_image": crop_image,
+            "mask_image": mask_image,
+        })
+
+    return result

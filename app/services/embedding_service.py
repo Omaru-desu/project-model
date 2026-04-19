@@ -6,7 +6,7 @@ import torch
 import torch.nn.functional as F
 from PIL import Image
 
-from app.core.config import DEVICE
+from app.core.config import DEVICE, BATCH_SIZE
 from app.services.dinov3_runtime import dinov3_runtime
 
 
@@ -38,9 +38,12 @@ def _run_dinov3_on_pil(images: List[Image.Image], embedding_type: str = "cls") -
     inputs = dinov3_runtime.processor(images=images, return_tensors="pt")
     inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
 
-    # Start simple and stable. Add autocast later if needed.
     with torch.inference_mode():
-        outputs = dinov3_runtime.model(**inputs)
+        if DEVICE == "cuda" and torch.cuda.is_available():
+            with torch.autocast("cuda", dtype=torch.float16):
+                outputs = dinov3_runtime.model(**inputs)
+        else:
+            outputs = dinov3_runtime.model(**inputs)
 
     emb = _extract_embedding(outputs, dinov3_runtime.model, embedding_type)
     return emb.detach().cpu().numpy().astype(np.float32)
@@ -59,6 +62,20 @@ def embed_pil_images(images: List[Image.Image], embedding_type: str = "cls") -> 
     """Run DINOv3 on a batch of PIL images and return normalised embeddings."""
     embs = _run_dinov3_on_pil(images, embedding_type=embedding_type)
     return [e.tolist() for e in embs]
+
+
+def embed_batch(
+    images: List[Image.Image],
+    batch_size: int = BATCH_SIZE,
+    embedding_type: str = "cls",
+) -> List[List[float]]:
+    """Process a flat list of PIL Images in chunks of batch_size through DINOv3."""
+    results = []
+    for i in range(0, len(images), batch_size):
+        chunk = images[i : i + batch_size]
+        embs = _run_dinov3_on_pil(chunk, embedding_type=embedding_type)
+        results.extend(e.tolist() for e in embs)
+    return results
 
 
 def embed_full_image(file_bytes: bytes, embedding_type: str = "cls") -> List[float]:
