@@ -19,7 +19,7 @@ env/
 .env
 .env.*
 
-# Google service account credentials
+
 service-account.json
 test
 
