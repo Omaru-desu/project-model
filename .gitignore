@@ -18,6 +18,9 @@ env/
 # Environment variables
 .env
 .env.*
+
+# Google service account credentials
+service-account.json
 test
 
 # macOS
@@ -38,6 +41,8 @@ htmlcov/
 *.log
 
 checkpoints/
+docs/
+tests/
 
 *.pyc
 tmp_*.pyc*

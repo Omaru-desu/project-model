@@ -1,9 +1,15 @@
 from pathlib import Path
+import torch
 
 SAM3_CHECKPOINT = Path("checkpoints/sam3.1/sam3.1_multiplex.pt")
 DINO_MODEL_NAME = "facebook/dinov3-vits16-pretrain-lvd1689m"
 
-DEVICE = "cuda"
+if torch.cuda.is_available():
+    DEVICE = "cuda"
+elif torch.backends.mps.is_available():
+    DEVICE = "mps"
+else:
+    DEVICE = "cpu"
 
 MIN_SCORE = 0.45
 MIN_BOX_AREA = 400
